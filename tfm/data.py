@@ -59,6 +59,17 @@ def board():
     return _load("board.json")
 
 
+def colony_trade(name):
+    """A colony's trade text, noting that World Government raises give no TR."""
+    trade = (colony(name) or {}).get("trade", "?")
+    if "WGT" in trade:
+        trade += " (a World Government raise: it gives you no TR)"
+    return trade
+
+
+HAZARD_STEPS = {"Mild Dust Storm": 1, "Mild Erosion": 1, "Severe Dust Storm": 2, "Severe Erosion": 2}
+
+
 def adjacency(board_name, space_id):
     return board()["boards"].get(board_name, {}).get(space_id, {}).get("adj", [])
 

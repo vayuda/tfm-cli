@@ -121,7 +121,7 @@ def colonies(g, view, names, ctx=None):
         pos = c.get("trackPosition", 0)
         now = qty[pos] if isinstance(qty, list) and pos < len(qty) else "?"
         owners = ", ".join(names.get(x, x) for x in c["colonies"]) or "-"
-        trade = info.get("trade", "?") if ctx is None or ctx.show_text("col:" + c["name"]) else "…"
+        trade = data.colony_trade(c["name"]) if ctx is None or ctx.show_text("col:" + c["name"]) else "…"
         line = f"  {c['name']}: trade {trade} (n={now} now) · colonies {owners} ({len(c['colonies'])}/3)"
         if c.get("visitor"):
             line += f" · fleet: {names.get(c['visitor'], c['visitor'])}"
@@ -167,7 +167,8 @@ def sections(view, ctx, new_logs):
     add("", True, "")
     add("you", True,
         f"YOU: {me['name']} ({me['color']}) · {corporation(me)} · TR {me['terraformRating']} · "
-        f"VP now {vp['total']} (TR {vp['terraformRating']}, milestones {vp['milestones']}, awards {vp['awards']}, "
+        f"VP if the game ended now {vp['total']} (TR {vp['terraformRating']}, milestones {vp['milestones']}, "
+        f"awards {vp['awards']} by current standings, "
         f"greenery {vp['greenery']}, city {vp['city']}, cards {vp['victoryPoints']})",
         f"  {resources(me)}  · steel={me['steelValue']} ti={me['titaniumValue']}")
     add("you.tags", False, f"  tags: {tags(me)}")

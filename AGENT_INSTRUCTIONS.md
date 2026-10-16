@@ -31,21 +31,27 @@ Repeat until you see `GAME OVER`:
 3. `tfm -s <seat> play <id> [value ...]`
    This submits the choice. If more input is needed in the same turn (a placement, a second action),
    the new choices are printed right away: keep going with `play`. When it says
-   `Your turn is done`, go back to step 1.
+   `Your turn is done`, go back to step 1. That message means the other players act next; unless it says
+   you have passed, you get more actions later this generation.
 
 Set your shell tool's timeout to at least 120 seconds for `tfm turn`. If your tool cannot wait that long,
 use `tfm -s <seat> turn --wait 50`.
 
 ## Reading the output
 
-- `YOU`: your TR, current VP breakdown, resources as `stock(+production)`, tags, played cards, hand,
-  and the **clock**. Escape Velocity is usually on: time past the allowance costs VP, so don't
+- `YOU`: your TR, VP breakdown, resources as `stock(+production)`, tags, played cards, hand,
+  and the **clock**. The VP line is "if the game ended now": its award points follow the current standings of
+  the funded awards, so they move as rivals overtake you or you overtake them. Escape Velocity is usually on: time past the allowance costs VP, so don't
   over-deliberate routine moves.
 - `OPPONENTS`: public resources, tags and played cards.
 - `MILESTONES`: your score against the best rival's. `<<< YOU CAN CLAIM` means you qualify right now.
 - `AWARDS`: everyone's current score.
 - `SINCE YOUR LAST LOOK`: what happened since your previous `turn`.
-- `YOUR DECISION`: the legal choices. Only these ids are accepted.
+- `YOUR DECISION`: the legal choices. Only these ids are accepted. In an action menu, `NOT PLAYABLE NOW`
+  lists the hand cards that aren't offered, with the likely reason (unmet requirement, a production decrease
+  you can't make, cost).
+- Board spaces in a placement list show what the placement costs: `COVERS <hazard>` (extra M€, extra TR)
+  and `NEXT TO HAZARDS` (production you must give up, except for oceans).
 
 Card text is printed the **first time** a card appears for your seat and abbreviated after that. Keep
 your own notes, or use `tfm card "<name>"` or `--full` to see it again.
@@ -64,7 +70,8 @@ your own notes, or use `tfm card "<name>"` or `--full` to see it again.
 Payment keys: `mc`, `steel`, `titanium`, `heat`, `plants`, `microbes`, `floaters`, `seeds`, `data`, `graphene`.
 
 **Always add `--expect` with the name of what you're choosing**: the card, project, milestone, award,
-colony or space id. For example: `tfm -s me play 2.3 --expect "Solar Farm"` or
+colony or space id. It is matched against the option's text and against the values you pass, so for the
+opening pick `--expect "Ecoline"` works. For example: `tfm -s me play 2.3 --expect "Solar Farm"` or
 `play 1.12 --expect "space 35"`. Choice ids renumber after every action, so an id from an old list
 can point at a different option. With `--expect`, a mismatch is refused, the options matching your
 text are listed, and nothing is submitted. Also, never chain two `play` commands in one shell call:

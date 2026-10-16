@@ -7,6 +7,7 @@ Built so that AI agents with shell access can play a seat with few tokens:
 """
 import argparse
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -49,9 +50,72 @@ def _print_options(view, ctx, seat):
     for leaf in leaves:
         label = leaf.label[len(title) + 3:] if leaf.label.startswith(title + " › ") else leaf.label
         print(f"  [{leaf.id}] {label}" + (f"  ⟨{leaf.hint}⟩" if leaf.hint else ""))
+    _print_unplayable(view, title)
     print("Reply with: tfm play <id> [value ...]   (quote values containing spaces)")
     seat["fp"] = options.fingerprint(wf)
 
+
+
+def _turn_done(view):
+    g = view["game"]
+    if g["phase"] == "action":
+        if view["thisPlayer"]["color"] in g.get("passedPlayers", []):
+            return ("You have passed: no more actions for you this generation. "
+                    "Run `tfm turn` to wait for your next decision.")
+        return ("Your turn is done, but you have NOT passed: you act again this generation after the other "
+                "players. Run `tfm turn` to wait for it.")
+    return f"Done for now (phase: {g['phase']}). Run `tfm turn` to wait for your next decision."
+
+
+def _playable_names(node, out):
+    if isinstance(node, dict):
+        if node.get("type") == "projectCard":
+            out.update(c["name"] for c in node.get("cards") or [] if isinstance(c, dict) and not c.get("isDisabled"))
+        for key in ("options", "andOptions"):
+            for child in node.get(key) or []:
+                _playable_names(child, out)
+    return out
+
+
+def _unplayable_reason(model, outlook):
+    """Why a hand card is not offered as a play: the first reason tfm can find from its data."""
+    me = outlook.me
+    info = data.card(model["name"]) or {}
+    for req in info.get("req", []):
+        met, text = value.requirement_status(req, outlook)
+        if met is False:
+            return f"requirement not met: {text}"
+    production = ((data.behavior(model["name"]) or {}).get("behavior") or {}).get("production") or {}
+    for res, delta in production.items():
+        if not isinstance(delta, (int, float)) or delta >= 0:
+            continue
+        key = {"megacredits": "megacreditProduction", "steel": "steelProduction", "titanium": "titaniumProduction",
+               "plants": "plantProduction", "energy": "energyProduction", "heat": "heatProduction"}.get(res)
+        if key is None:
+            continue
+        floor = -5 if res == "megacredits" else 0
+        if me[key] + delta < floor:
+            return f"needs {res} production to drop {-delta} (you have {me[key]:+d})"
+    cost = model.get("calculatedCost", info.get("cost") or 0)
+    tags = info.get("tags", [])
+    most = me["megacredits"] + (me["steel"] * me["steelValue"] if "building" in tags else 0) \
+        + (me["titanium"] * me["titaniumValue"] if "space" in tags else 0)
+    if cost > most:
+        return f"costs {cost} M€; you can pay about {most}"
+    return "another condition (a legal space, a resource on a card, or a card rule): see `tfm card`"
+
+
+def _print_unplayable(view, title):
+    """In an action menu, list hand cards that aren't offered as plays, with a likely reason."""
+    if not re.match(r"Take your (first|next) action", title):
+        return
+    playable = _playable_names(view.get("waitingFor"), set())
+    blocked = [c for c in view.get("cardsInHand", []) if c["name"] not in playable]
+    if not blocked:
+        return
+    outlook = value.Outlook(view)
+    print("NOT PLAYABLE NOW from your hand: " + "; ".join(
+        f"{c['name']} ({_unplayable_reason(c, outlook)})" for c in blocked))
 
 
 def _finish(seat, ctx):
@@ -206,9 +270,11 @@ def cmd_options(args):
     _finish(seat, ctx)
 
 
-def _leaf_matches(leaf, text):
+def _leaf_matches(leaf, text, values=()):
+    """--expect check: TEXT is in the option's label, its fixed value, or the values being submitted."""
     text = text.lower()
-    return text in leaf.label.lower() or (isinstance(leaf.fixed, str) and text in leaf.fixed.lower())
+    return (text in leaf.label.lower() or (isinstance(leaf.fixed, str) and text in leaf.fixed.lower())
+            or any(text in v.lower() for v in values))
 
 
 def cmd_play(args):
@@ -226,7 +292,7 @@ def cmd_play(args):
         sys.exit(2)
     all_leaves = options.leaves(wf, ctx)
     leaf = options.find_leaf(all_leaves, args.choice)
-    if args.expect and not _leaf_matches(leaf, args.expect):
+    if args.expect and not _leaf_matches(leaf, args.expect, args.values):
         print(f"Option [{leaf.id}] is now \"{leaf.label}\", which doesn't contain \"{args.expect}\", "
               "so nothing was submitted.")
         matches = [lf.id for lf in all_leaves if _leaf_matches(lf, args.expect)]
@@ -264,7 +330,7 @@ def cmd_play(args):
         _print_options(new_view, ctx, seat)
     else:
         seat.pop("fp", None)
-        print("Your turn is done. Run `tfm turn` to wait for your next decision.")
+        print(_turn_done(new_view))
     _finish(seat, ctx)
 
 

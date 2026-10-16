@@ -246,8 +246,14 @@ def describe_space(sid, ctx):
         parts.append("bonus " + ",".join(data.bonus_name(b) for b in space["bonus"]))
     if space.get("undergroundResource"):
         parts.append(f"underground {space['undergroundResource']}")
+    if space.get("tileType") is not None:
+        covered = data.tile_name(space["tileType"])
+        steps = data.HAZARD_STEPS.get(covered)
+        if steps:
+            parts.append(f"COVERS {covered}: costs {8 * steps} M€ extra, gives +{steps} TR")
     adj = []
     empty = 0
+    hazard_loss = 0
     for aid in data.adjacency(ctx.board_name, sid):
         a = ctx.spaces.get(aid, {})
         if a.get("tileType") is None:
@@ -256,8 +262,11 @@ def describe_space(sid, ctx):
         owner = a.get("color")
         who = "your" if owner == ctx.me["color"] else ctx.names.get(owner, "") if owner else ""
         adj.append(f"{who} {data.tile_name(a['tileType'])}".strip())
+        hazard_loss += data.HAZARD_STEPS.get(data.tile_name(a["tileType"]), 0)
     if adj:
         parts.append("adj: " + ", ".join(adj))
+    if hazard_loss:
+        parts.append(f"NEXT TO HAZARDS: unless this is an ocean, lose {hazard_loss} production of your choice (2 from one type per severe hazard)")
     parts.append(f"{empty} empty adj")
     return " · ".join(parts)
 
@@ -265,7 +274,7 @@ def describe_space(sid, ctx):
 def describe_colony(col, ctx):
     info = data.colony(col["name"]) or {}
     qty = info.get("tradeQty")
-    trade = info.get("trade", "")
+    trade = data.colony_trade(col["name"])
     pos = col.get("trackPosition")
     if isinstance(qty, list) and pos is not None and pos < len(qty):
         trade = re.sub(r"\bn\b", str(qty[pos]), trade)
