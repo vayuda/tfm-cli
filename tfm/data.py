@@ -81,3 +81,68 @@ def tile_name(tile_type):
 
 def bonus_name(bonus):
     return board()["spaceBonus"].get(str(bonus), f"bonus{bonus}").lstrip("_")
+
+
+# ------------------------------------------------------------------ global parameters per map
+# Each map's maximums and the bonuses printed along its tracks, mirroring the app's
+# GlobalParameterMaximums.ts and GlobalParameterTracks.ts. Maps not listed use the standard ones.
+
+PARAMS = ("temperature", "oxygen", "oceans", "venus")
+MINIMUMS = {"temperature": -30, "oxygen": 0, "oceans": 0, "venus": 0}
+
+_STANDARD_GLOBALS = {
+    "max": {"temperature": 8, "oxygen": 14, "oceans": 9, "venus": 30},
+    # (threshold, bonus) granted when the track rises from below the threshold to at or above it.
+    "tracks": {
+        "temperature": ((-24, "heatproduction"), (-20, "heatproduction"), (0, "ocean")),
+        "oxygen": ((8, "temperature"),),
+        "venus": ((8, "drawcard"), (16, "tr")),
+    },
+}
+
+_MAP_GLOBALS = {
+    "amazonis planitia": {
+        "max": {"temperature": 14, "oxygen": 18, "oceans": 11, "venus": 33},
+        "tracks": {
+            "temperature": ((-24, "heatproduction"), (-20, "heatproduction"), (-12, "plant"), (0, "ocean")),
+            "oxygen": ((7, "drawcard"), (11, "temperature")),
+            "venus": ((8, "drawcard"), (16, "colony"), (22, "tr")),
+        },
+    },
+}
+
+
+def map_globals(board_name):
+    """{"max": {param: maximum}, "tracks": {param: ((threshold, bonus), ...)}} for a map."""
+    return _MAP_GLOBALS.get((board_name or "").strip().lower(), _STANDARD_GLOBALS)
+
+
+def param_max(param, board_name):
+    return map_globals(board_name)["max"][param]
+
+
+def param_steps(param, value):
+    """Steps from the track's start to `value`: 2 °C per temperature step, 1 per oxygen % or ocean, and
+    2% per Venus step up to 30% then 1% (the longer Venus track on Amazonis Planitia)."""
+    if param == "temperature":
+        return max(0, (value + 30) // 2)
+    if param == "venus":
+        return value // 2 if value <= 30 else 15 + (value - 30)
+    return max(0, value)
+
+
+def param_level(param, steps):
+    """The track value after `steps` steps from its start (inverse of param_steps)."""
+    if param == "temperature":
+        return -30 + 2 * steps
+    if param == "venus":
+        return 2 * steps if steps <= 15 else 30 + (steps - 15)
+    return steps
+
+
+def steps_left(param, value, board_name):
+    return max(0, param_steps(param, param_max(param, board_name)) - param_steps(param, value))
+
+
+def total_steps(param, board_name):
+    return param_steps(param, param_max(param, board_name))

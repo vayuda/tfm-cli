@@ -279,11 +279,14 @@ class Outlook:
         self.generation = g["generation"]
         self.temp, self.oxygen, self.oceans = g["temperature"], g["oxygenLevel"], g["oceans"]
         self.venus = g.get("venusScaleLevel", 0) or 0
+        # Maximums and track bonuses depend on the map (Amazonis Planitia's tracks are longer).
+        self.board = opts.get("boardName", "")
+        self.globals = data.map_globals(self.board)
         self.left = {
-            "temperature": max(0, (8 - self.temp) // 2),
-            "oxygen": max(0, 14 - self.oxygen),
-            "oceans": max(0, 9 - self.oceans),
-            "venus": max(0, (30 - self.venus) // 2) if self.expansions.get("venus") else 0,
+            "temperature": data.steps_left("temperature", self.temp, self.board),
+            "oxygen": data.steps_left("oxygen", self.oxygen, self.board),
+            "oceans": data.steps_left("oceans", self.oceans, self.board),
+            "venus": data.steps_left("venus", self.venus, self.board) if self.expansions.get("venus") else 0,
         }
         remaining = self.left["temperature"] + self.left["oxygen"] + self.left["oceans"] + \
             (self.left["venus"] if self.venus_counts else 0)
@@ -293,6 +296,9 @@ class Outlook:
         # estimate at a typical game length for this player count and setup. Our 4-player games with
         # Prelude ended in generation 8 and our 5-player ones in generation 7.
         typical = {1: 14, 2: 12, 3: 11, 4: 9}.get(len(self.players), 8) - (1 if self.expansions.get("prelude") else 0)
+        # Longer tracks mean a longer game: scale by this map's terraforming steps against the standard 42.
+        steps = sum(data.total_steps(p, self.board) for p in ("temperature", "oxygen", "oceans"))
+        typical = round(typical * steps / 42)
         by_length = max(1, typical - self.generation + 1)
         self.gens_left = gens_left if gens_left is not None else min(by_pace, by_length)
         self.by_pace, self.by_length = by_pace, by_length
@@ -334,9 +340,9 @@ class Outlook:
 
     def _pace(self, history):
         def steps(e):
-            s = max(0, (e.get("temperature", -30) + 30) // 2) + e.get("oxygen", 0) + e.get("oceans", 0)
+            s = data.param_steps("temperature", e.get("temperature", -30)) + e.get("oxygen", 0) + e.get("oceans", 0)
             if self.venus_counts:
-                s += max(0, e.get("venus", 0) // 2)
+                s += data.param_steps("venus", e.get("venus", 0))
             return s
         if len(history) >= 2:
             recent = history[-3:]
@@ -855,11 +861,13 @@ def _later(ctx, g):
     c.tr = VP + c.phases
     c.plant_phases = c.gens_left
     c.left = {p: max(0, round(n - _param_rate(p, ctx) * g)) for p, n in ctx.left.items()}
-    c.temp = max(ctx.temp, 8 - 2 * c.left["temperature"])
-    c.oxygen = max(ctx.oxygen, 14 - c.left["oxygen"])
-    c.oceans = max(ctx.oceans, 9 - c.left["oceans"])
+    def level(param):
+        return data.param_level(param, data.total_steps(param, ctx.board) - c.left[param])
+    c.temp = max(ctx.temp, level("temperature"))
+    c.oxygen = max(ctx.oxygen, level("oxygen"))
+    c.oceans = max(ctx.oceans, level("oceans"))
     if ctx.expansions.get("venus"):
-        c.venus = max(ctx.venus, 30 - 2 * c.left["venus"])
+        c.venus = max(ctx.venus, level("venus"))
     c.heat = c.tr / 8 if c.left["temperature"] > 0 or ctx.ambient else 0.0
     c.plant = (VP + c.tr) / 8 if c.left["oxygen"] > 0 else VP / 8
     return c
@@ -1765,14 +1773,7 @@ class _Sim:
             self.steps["temperature"] += 1
             self._price(label, ctx.tr, tr=1)
             label = label and f"bonus temperature step{via}"
-            for t in (-24, -20):
-                if before < t <= self.temp:
-                    v.add(f"temperature reaches {t}°C: +1 heat production{via}", ctx.heat * ctx.phases)
-            if before < 0 <= self.temp:
-                if self.left["oceans"]:
-                    self.queue.append(("ocean", 1, f"temperature reaches 0°C: bonus ocean{via}", via))
-                else:
-                    v.flags.append(f"temperature reaches 0°C{via} but oceans are full: no bonus ocean")
+            self._track_bonuses("temperature", before, self.temp, via)
             if not self.left["temperature"]:
                 self.last.append("temperature")
 
@@ -1784,11 +1785,7 @@ class _Sim:
             self.steps["oxygen"] += 1
             self._price(label, ctx.tr, tr=1)
             label = label and f"bonus oxygen step{via}"
-            if before < 8 <= self.oxygen:
-                if self.left["temperature"]:
-                    self.queue.append(("temperature", 1, "oxygen reaches 8%: bonus temperature step", " (via oxygen 8%)"))
-                else:
-                    v.flags.append("oxygen reaches 8% but temperature is maxed: no bonus")
+            self._track_bonuses("oxygen", before, self.oxygen, via)
             if not self.left["oxygen"]:
                 self.last.append("oxygen")
 
@@ -1814,7 +1811,8 @@ class _Sim:
     def _venus(self, n, label, via):
         ctx, v = self.ctx, self.v
         for _ in range(min(n, self.left["venus"])):
-            before, self.venus = self.venus, self.venus + 2
+            before = self.venus
+            self.venus = data.param_level("venus", data.param_steps("venus", before) + 1)
             self.left["venus"] -= 1
             self.steps["venus"] += 1
             self._price(label, ctx.tr, tr=1)
@@ -1823,14 +1821,41 @@ class _Sim:
                 if self.venus > 16:
                     v.add(f"alternative Venus board: resource reward{via}", 2.0)
             else:
-                if before < 8 <= self.venus:
-                    v.add(f"Venus reaches 8%: draw a card{via}", CARD)
-                if before < 16 <= self.venus:
-                    v.add(f"Venus reaches 16%: +1 TR{via}", ctx.tr)
-                    self.bonus_tr += 1
-                    v.tr += 1
+                self._track_bonuses("venus", before, self.venus, via)
             if not self.left["venus"]:
                 self.last.append("venus")
+
+    def _track_bonuses(self, param, before, after, via):
+        """The bonuses printed on this map's `param` track that a step from `before` to `after` crosses."""
+        ctx, v = self.ctx, self.v
+        unit = {"temperature": "°C", "oxygen": "%", "venus": "%"}[param]
+        name = {"temperature": "temperature", "oxygen": "oxygen", "venus": "Venus"}[param]
+        for threshold, bonus in ctx.globals["tracks"][param]:
+            if not before < threshold <= after:
+                continue
+            at = f"{name} reaches {threshold}{unit}"
+            if bonus == "heatproduction":
+                v.add(f"{at}: +1 heat production{via}", ctx.heat * ctx.phases)
+            elif bonus == "plant":
+                v.add(f"{at}: +1 plant production{via}", ctx.plant * ctx.plant_phases)
+            elif bonus == "drawcard":
+                v.add(f"{at}: draw a card{via}", CARD)
+            elif bonus == "colony":
+                v.add(f"{at}: build a colony{via}", COLONY)
+            elif bonus == "tr":
+                v.add(f"{at}: +1 TR{via}", ctx.tr)
+                self.bonus_tr += 1
+                v.tr += 1
+            elif bonus == "ocean":
+                if self.left["oceans"]:
+                    self.queue.append(("ocean", 1, f"{at}: bonus ocean{via}", via))
+                else:
+                    v.flags.append(f"{at}{via} but oceans are full: no bonus ocean")
+            elif bonus == "temperature":
+                if self.left["temperature"]:
+                    self.queue.append(("temperature", 1, f"{at}: bonus temperature step", f" (via {name} {threshold}{unit})"))
+                else:
+                    v.flags.append(f"{at} but temperature is maxed: no bonus")
 
     # Planetary-track rewards that change the board go back into the queue instead of a flat price.
     _CHAIN_REWARDS = {"venus_scale": "venus", "ocean": "ocean", "greenery": "greenery", "city": "city"}

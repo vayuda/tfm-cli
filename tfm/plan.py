@@ -54,7 +54,7 @@ CITY_VP = value.CITY_TILE / VP  # a city's greenery adjacency, flat (value.py pr
 OCEAN_ADJACENCY = value.OCEAN_ADJACENCY  # M€ from ocean adjacency on top of the ocean's TR
 PRELUDES_KEPT = 2          # standard Prelude rule: keep 2 of the 4 dealt
 RIVAL_VENUS_STEPS = 1.0    # Venus steps per generation from rivals when Venus does not count for game end
-MAX = {"temperature": 8, "oxygen": 14, "oceans": 9, "venus": 30}
+MAX = {"temperature": 8, "oxygen": 14, "oceans": 9, "venus": 30}  # standard maps; see _map_max
 STEP = {"temperature": 2, "oxygen": 1, "oceans": 1, "venus": 2}
 MIN = {"temperature": -30, "oxygen": 0, "oceans": 0, "venus": 0}
 STANDARD_PROJECTS = {"Power Plant:SP": 11, "Asteroid:SP": 14, "Aquifer": 18, "Greenery": 23, "City": 25,
@@ -90,6 +90,7 @@ class _State:
         self.tableau = []          # dicts as in the view (name, resources)
         self.hand = []             # card names
         self.params = {}           # temperature °C, oxygen %, oceans, venus % (floats while rivals advance)
+        self.max = dict(MAX)       # this map's parameter maximums
         self.cities = 0
         self.greeneries = 0
         self.card_vp = 0.0         # printed VP of cards played in the simulation
@@ -141,6 +142,14 @@ class Projection:
         for gen, label in self.plays:
             out.setdefault(gen, []).append(label)
         return out
+
+
+def _map_max(game):
+    """This map's parameter maximums (Amazonis Planitia's tracks are longer). Venus is simulated in 2% steps,
+    so it stops at 30% here even where the map's track goes further."""
+    top = dict(data.map_globals((game.get("gameOptions") or {}).get("boardName"))["max"])
+    top["venus"] = min(top["venus"], 30)
+    return top
 
 
 def _whole(param, x):
@@ -506,9 +515,9 @@ class _Planner:
         """Raise a global parameter by whole steps for you; returns the TR gained."""
         if param not in s.params or (param == "venus" and not self.venus_on):
             return 0
-        room = int(round((MAX[param] - _whole(param, s.params[param])) / STEP[param]))
+        room = int(round((s.max[param] - _whole(param, s.params[param])) / STEP[param]))
         done = max(0, min(int(steps), room))
-        s.params[param] = min(MAX[param], s.params[param] + done * STEP[param])
+        s.params[param] = min(s.max[param], s.params[param] + done * STEP[param])
         s.tr += done
         return done
 
@@ -582,7 +591,7 @@ class _Planner:
             s.plays.append((gen, "greenery (plants)"))
         helion = any(c["name"] == "Helion" for c in s.tableau)
         # Helion spends heat as M€: 8 heat go to a temperature step only while a TR is worth more than 8 M€.
-        while s.stock["heat"] >= 8 and s.params["temperature"] < MAX["temperature"] and \
+        while s.stock["heat"] >= 8 and s.params["temperature"] < s.max["temperature"] and \
                 not (helion and ctx is not None and ctx.tr <= 8):
             s.stock["heat"] -= 8
             self.raise_param(s, "temperature", 1)
@@ -603,15 +612,15 @@ class _Planner:
         the table (you included) keeps to the schedule that finishes terraforming in the projected generations:
         your own steps from drawn cards are banked as VP, not simulated, so rivals stand in for them."""
         params = ["temperature", "oxygen", "oceans"] + (["venus"] if self.venus_counts else [])
-        left = {p: max(0.0, (MAX[p] - s.params[p]) / STEP[p]) for p in params}
+        left = {p: max(0.0, (s.max[p] - s.params[p]) / STEP[p]) for p in params}
         total = sum(left.values())
         if total and self.n_players > 1:
             due = total - max(0.0, self.base.remaining_steps - (i + 1) * self.table_pace)
             steps = max(self.rival_pace, due)
             for p in params:
-                s.params[p] = min(MAX[p], s.params[p] + min(left[p], steps * left[p] / total) * STEP[p])
+                s.params[p] = min(s.max[p], s.params[p] + min(left[p], steps * left[p] / total) * STEP[p])
         if self.venus_on and not self.venus_counts:
-            s.params["venus"] = min(MAX["venus"], s.params["venus"] + RIVAL_VENUS_STEPS * STEP["venus"])
+            s.params["venus"] = min(s.max["venus"], s.params["venus"] + RIVAL_VENUS_STEPS * STEP["venus"])
 
     # ---- one generation
 
@@ -843,6 +852,7 @@ class _Planner:
         s.tokens = len((me.get("underworldData") or {}).get("tokens") or [])
         s.steel_value = float(me.get("steelValue", 2))
         s.ti_value = float(me.get("titaniumValue", 3))
+        s.max = _map_max(g)
         s.params = {"temperature": float(g["temperature"]), "oxygen": float(g["oxygenLevel"]),
                     "oceans": float(g["oceans"]), "venus": float(g.get("venusScaleLevel", 0) or 0)}
         hand = [c["name"] for c in (self.view.get("cardsInHand") or []) + (self.view.get("preludeCardsInHand") or [])]
@@ -894,6 +904,7 @@ def opening(view, corporation, preludes=(), keep=(), gens=None, free=False, buy_
     g = view["game"]
     s = _State()
     s.tr = 14 if planner.n_players == 1 else 20
+    s.max = _map_max(g)
     s.params = {"temperature": float(g["temperature"]), "oxygen": float(g["oxygenLevel"]),
                 "oceans": float(g["oceans"]), "venus": float(g.get("venusScaleLevel", 0) or 0)}
     planner.start_tr, planner.start_vp = s.tr, s.tr

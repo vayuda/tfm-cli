@@ -330,9 +330,10 @@ def _conversion_note(title, ctx):
     """A warning on standard conversions that no longer raise a parameter."""
     game = getattr(ctx, "game", None) or {}
     low = title.lower()
-    if "heat into temperature" in low and game.get("temperature", -30) >= 8:
+    board = (game.get("gameOptions") or {}).get("boardName")
+    if "heat into temperature" in low and game.get("temperature", -30) >= data.param_max("temperature", board):
         return "  ⟨temperature maxed: no TR — the heat is wasted⟩"
-    if "plants into greenery" in low and game.get("oxygenLevel", 0) >= 14:
+    if "plants into greenery" in low and game.get("oxygenLevel", 0) >= data.param_max("oxygen", board):
         return "  ⟨oxygen maxed: greenery 1 VP, no TR⟩"
     return ""
 

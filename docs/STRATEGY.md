@@ -20,6 +20,8 @@ resources, coordinates or plans over from a previous game.
    Most 4–5 player games are typically 7–8 generations long, but depending on the strategy players are
    employing this can vary slightly. As the game plays out, estimate the generations left yourself from
    the board and pass the result to `tfm value --gens N`.
+   Some maps have different global-parameter maximums and track bonuses; take them into account when
+   estimating.
 4. After every card or tile, recheck **all** unclaimed milestones, not just the ones you were aiming for.
 5. Keep cash in reserve for a milestone claim, an award fee or a contested opportunity before spending
    on optional development.
@@ -111,7 +113,7 @@ Read these from the game itself. Don't assume them.
 | Setting | Why it matters |
 |---|---|
 | Player count | Game length, award competition, how contested milestones are |
-| Map | Special spaces and placement rules; `tfm` lists each space's bonuses |
+| Map | Special spaces and placement rules; `tfm` lists each space's bonuses. Some maps also change the global parameters' maximums and track bonuses (the GLOBALS line shows the maximums) |
 | Expansions | Venus, Colonies, Prelude, Turmoil, Ares, Pathfinders, Underworld, etc. change what's valuable |
 | Draft variant | Whether you pass cards between players during research |
 | Milestones and awards | Often random, sometimes fan-made. `tfm` prints each requirement the first time |

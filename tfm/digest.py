@@ -52,14 +52,19 @@ def clock(p, options):
 
 
 def globals_line(g):
+    board = g["gameOptions"].get("boardName")
+    top = data.map_globals(board)["max"]
     parts = [
-        f"temp {g['temperature']}°C/+8 ({max(0, (8 - g['temperature']) // 2)} steps left)",
-        f"O2 {g['oxygenLevel']}%/14 ({max(0, 14 - g['oxygenLevel'])} left)",
-        f"oceans {g['oceans']}/9 ({max(0, 9 - g['oceans'])} left)",
+        f"temp {g['temperature']}°C/+{top['temperature']} ({data.steps_left('temperature', g['temperature'], board)} steps left)",
+        f"O2 {g['oxygenLevel']}%/{top['oxygen']} ({data.steps_left('oxygen', g['oxygenLevel'], board)} left)",
+        f"oceans {g['oceans']}/{top['oceans']} ({data.steps_left('oceans', g['oceans'], board)} left)",
     ]
     if g["gameOptions"]["expansions"].get("venus"):
-        parts.append(f"Venus {g['venusScaleLevel']}%/30")
-    return " · ".join(parts)
+        parts.append(f"Venus {g['venusScaleLevel']}%/{top['venus']}")
+    line = " · ".join(parts)
+    if data.map_globals(board) is not data.map_globals(""):
+        line += " (this map's maximums and track bonuses differ from the standard maps)"
+    return line
 
 
 def milestones(g, me, names, ctx):
