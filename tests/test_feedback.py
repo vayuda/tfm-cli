@@ -109,6 +109,28 @@ class DroppedConnection(unittest.TestCase):
         self.assertEqual(calls, ["POST"])
 
 
+class Payment(unittest.TestCase):
+    def ctx(self, **stock):
+        from tfm import options
+        v = view()
+        v["thisPlayer"].update({"megacredits": 0, "heat": 0, "steel": 0, "titanium": 0, "plants": 0, **stock})
+        v["game"]["gameOptions"]["boardName"] = "tharsis"
+        return options.Context(v, set(), False)
+
+    def test_martian_lumber_plants_cover_the_shortfall(self):
+        from tfm import options
+        card = {"name": "Mine", "calculatedCost": 4}  # a building card
+        node = {"paymentOptions": {"plants": True}}
+        pay, short = options.default_payment(card, node, self.ctx(megacredits=1, plants=4))
+        self.assertEqual((pay, short), ({"megacredits": 1, "plants": 1}, 0))
+
+    def test_plants_are_not_spent_when_money_covers_it(self):
+        from tfm import options
+        pay, short = options.default_payment({"name": "Mine", "calculatedCost": 4}, {"paymentOptions": {"plants": True}},
+                                             self.ctx(megacredits=5, plants=4))
+        self.assertEqual((pay, short), ({"megacredits": 4}, 0))
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}

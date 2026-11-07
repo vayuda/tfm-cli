@@ -454,8 +454,15 @@ def _greedy(cost, allow, avail, values):
         if h:
             pay["heat"] = h
             remaining -= h
+    # Still short: plants (Martian Lumber Corp) and card resources (microbes, floaters...), only when needed.
+    for res in ("plants", *CARD_RESOURCE_VALUE):
+        if remaining > 0 and res in allow and avail.get(res):
+            n = min(avail[res], remaining // values[res])
+            if n:
+                pay[res] = n
+                remaining -= n * values[res]
     if remaining > 0:  # top up with one more metal unit, accepting a small overpay
-        for res in ("steel", "titanium"):
+        for res in ("steel", "titanium", "plants", *CARD_RESOURCE_VALUE):
             if res in allow and avail.get(res, 0) > pay.get(res, 0):
                 extra = min(avail[res] - pay.get(res, 0), -(-remaining // values[res]))
                 pay[res] = pay.get(res, 0) + extra
