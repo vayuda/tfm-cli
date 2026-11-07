@@ -195,6 +195,18 @@ def _and_combos(node, ctx):
     return [(" + ".join(labels), resps) for labels, resps in combos]
 
 
+def playable_cards(waiting_for):
+    """Names of the cards the pending decision offers to play, or None when it offers no card play."""
+    found = None
+    stack = [waiting_for] if waiting_for else []
+    while stack:
+        node = stack.pop()
+        if node.get("type") == "projectCard":
+            found = (found or set()) | {c["name"] for c in node.get("cards", []) if not c.get("isDisabled")}
+        stack.extend(node.get("options") or [])
+    return found
+
+
 def _play_condition(name, ctx):
     """' ⚠ ...' when a card's custom play condition (not in its requirement list) fails now, e.g. Shipment to
     Earth's 3 plants and 3 steel; shown in draft and buy lists too."""

@@ -1,7 +1,7 @@
 """Compact text summary of a player's view of the game."""
 import time
 
-from . import data, value
+from . import data, options, value
 from .text import card_line, message
 
 RES = [("megacredits", "MC"), ("steel", "St"), ("titanium", "Ti"), ("plants", "Pl"), ("energy", "En"), ("heat", "He")]
@@ -193,8 +193,12 @@ def sections(view, ctx, new_logs, award_history=None):
         add("you.actions", False, f"  card actions used this generation: {', '.join(me['actionsThisGeneration'])}")
     add("you.clock", True, f"  {clock(me, opts)} · actions taken {me['actionsTakenThisGame']}")
     hand = view.get("cardsInHand", [])
+    # When this decision can play cards, mark the ones the app leaves out (an unmet requirement, a resource to
+    # lose or spend, no legal space...), so a card missing from the choices is not a surprise.
+    playable = options.playable_cards(view.get("waitingFor"))
     add("hand", False, f"  HAND ({len(hand)}):",
-        *("    " + card_line(c, with_text=ctx.show_text(c["name"])) for c in hand))
+        *("    " + card_line(c, with_text=ctx.show_text(c["name"])) +
+          (" — NOT PLAYABLE NOW" if playable is not None and c["name"] not in playable else "") for c in hand))
     for label, key in (("PRELUDES IN HAND", "preludeCardsInHand"), ("DRAFTED", "draftedCards")):
         cards = view.get(key) or []
         if cards:

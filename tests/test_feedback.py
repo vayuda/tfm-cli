@@ -131,6 +131,14 @@ class Payment(unittest.TestCase):
         self.assertEqual((pay, short), ({"megacredits": 4}, 0))
 
 
+class Playable(unittest.TestCase):
+    def test_cards_missing_from_the_play_choices_are_marked(self):
+        from tfm import options
+        wf = {"type": "or", "options": [{"type": "projectCard", "cards": [{"name": "Mine"}]}, {"type": "option"}]}
+        self.assertEqual(options.playable_cards(wf), {"Mine"})
+        self.assertIsNone(options.playable_cards({"type": "card", "cards": [{"name": "Mine"}]}))
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}
