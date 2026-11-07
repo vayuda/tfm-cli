@@ -45,6 +45,20 @@ class TradeNow(unittest.TestCase):
         self.assertGreater(high, low)  # titanium production beats M€ production
 
 
+class AresAdjacency(unittest.TestCase):
+    def test_space_next_to_nuclear_zone_shows_the_fee(self):
+        from tfm import options
+        v = view()
+        v["game"]["gameOptions"].update({"boardName": "tharsis", "expansions": {"ares": True}})
+        sid, nbr = "03", data.adjacency("tharsis", "03")[0]
+        v["game"]["spaces"] = [{"id": sid, "spaceType": "land", "bonus": []},
+                               {"id": nbr, "spaceType": "land", "bonus": [], "tileType": 12, "color": "green"}]
+        ctx = options.Context(v, set(), False)
+        self.assertIn("costs 2 M€ to build here", options.describe_space(sid, ctx))
+        v["game"]["gameOptions"]["expansions"] = {}
+        self.assertNotIn("costs 2 M€", options.describe_space(sid, options.Context(v, set(), False)))
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}

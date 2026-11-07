@@ -104,6 +104,18 @@ def tile_name(tile_type):
     return board()["tileType"].get(str(tile_type), f"tile{tile_type}")
 
 
+@lru_cache(maxsize=None)
+def ares_adjacency():
+    """{tile type: {"bonus": [space bonus...], "cost": M€}} for the Ares tiles that pay a bonus to whoever
+    builds next to them, or charge for it (Nuclear Zone: 2 M€)."""
+    out = {}
+    for b in _load("behaviors.json")["cards"].values():
+        tile = (b.get("behavior") or {}).get("tile") or {}
+        if tile.get("adjacencyBonus") and tile.get("type") is not None:
+            out[tile["type"]] = tile["adjacencyBonus"]
+    return out
+
+
 def bonus_name(bonus):
     return board()["spaceBonus"].get(str(bonus), f"bonus{bonus}").lstrip("_")
 

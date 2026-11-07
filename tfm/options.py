@@ -282,12 +282,20 @@ def describe_space(sid, ctx):
     adj = []
     empty = 0
     lose = 0
+    fee = 0
+    gains = []
+    ares = ((getattr(ctx, "game", None) or {}).get("gameOptions") or {}).get("expansions", {}).get("ares")
     for aid in data.adjacency(ctx.board_name, sid):
         a = ctx.spaces.get(aid, {})
         if a.get("tileType") is None:
             empty += 1
             continue
         lose += _hazard_steps(a)
+        if ares and a["tileType"] in data.ares_adjacency():
+            # Ares: building next to these tiles pays their bonus (or charges their cost) to you.
+            extra = data.ares_adjacency()[a["tileType"]]
+            fee += extra.get("cost", 0)
+            gains += [data.bonus_name(b) for b in extra.get("bonus", [])]
         owner = a.get("color")
         who = "your" if owner == ctx.me["color"] else ctx.names.get(owner, "") if owner else ""
         adj.append(f"{who} {data.tile_name(a['tileType'])}".strip())
@@ -296,6 +304,10 @@ def describe_space(sid, ctx):
     if lose:
         # Each adjacent hazard costs production: 1 step for mild, 2 of one type for severe.
         parts.append(f"next to hazard: lose {lose} production")
+    if gains:
+        parts.append("adjacency bonus " + ",".join(gains))
+    if fee:
+        parts.append(f"costs {fee} M€ to build here (adjacent tile fee)")
     parts.append(f"{empty} empty adj")
     return " · ".join(parts)
 
