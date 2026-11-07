@@ -59,6 +59,21 @@ class AresAdjacency(unittest.TestCase):
         self.assertNotIn("costs 2 M€", options.describe_space(sid, options.Context(v, set(), False)))
 
 
+class GameLength(unittest.TestCase):
+    def test_past_typical_length_the_estimate_follows_the_steps_left(self):
+        history = [{"temperature": -20, "oxygen": 4, "oceans": 4}, {"temperature": -16, "oxygen": 5, "oceans": 5},
+                   {"temperature": -14, "oxygen": 7, "oceans": 6}]
+        v = view(generation=10, temperature=-14, oxygen=7, oceans=6, players=3)
+        v["game"]["globalsPerGeneration"] = history
+        ctx = value.Outlook(v)
+        self.assertEqual(ctx.remaining_steps, 11 + 7 + 3)
+        self.assertGreaterEqual(ctx.gens_left, 4)  # not the 1 generation the typical-length cap alone would give
+
+    def test_before_typical_length_the_cap_still_applies(self):
+        ctx = value.Outlook(view(generation=3, temperature=-30, oxygen=0, oceans=0, players=3))
+        self.assertEqual(ctx.gens_left, ctx.by_length)
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}

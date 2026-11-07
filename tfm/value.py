@@ -300,6 +300,10 @@ class Outlook:
         steps = sum(data.total_steps(p, self.board) for p in ("temperature", "oxygen", "oceans"))
         typical = round(typical * steps / 42)
         by_length = max(1, typical - self.generation + 1)
+        if self.generation >= typical and remaining:
+            # Past the typical length the cap says nothing: the table is slower than usual, so expect the
+            # remaining steps at up to 1.5× the recent pace instead (backtested on recorded games).
+            by_length = max(by_length, math.ceil(remaining / (1.5 * self.pace)))
         self.gens_left = gens_left if gens_left is not None else min(by_pace, by_length)
         self.by_pace, self.by_length = by_pace, by_length
         # Production at the end of each remaining generation except the last can still be spent.
