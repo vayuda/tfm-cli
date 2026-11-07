@@ -390,6 +390,13 @@ def _settled_view(client, view, ctx):
 def cmd_card(args):
     for name in args.names:
         info = data.card(name)
+        ma = data._load("ma.json")
+        award = next((k for k in ma["awards"] if k.lower() == name.lower()), None)
+        milestone = next((k for k in ma["milestones"] if k.lower() == name.lower()), None)
+        if info is None and (award or milestone):
+            kind, key = ("award", award) if award else ("milestone", milestone)
+            print(f"{key} [{kind}] — {ma[kind + 's'][key]}")
+            continue
         colony = next((k for k in data._load("colonies.json") if k.lower() == name.lower()), None)
         if info is None and colony:
             c = data.colony(colony)

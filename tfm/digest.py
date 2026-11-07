@@ -107,7 +107,8 @@ def awards(g, me, names, ctx, view=None, history=None):
         if len(funded) == 3 and not a.get("playerName"):
             continue
         ranked = sorted(a["scores"], key=lambda s: -s["score"])
-        desc = data.award_text(a["name"]) if ctx.show_text("aw:" + a["name"]) else None
+        # Always printed: what an award counts is easy to forget, and players misjudged it when it was shown once.
+        desc = data.award_text(a["name"])
         line = f"  {a['name']}" + (f" ({desc})" if desc else "")
         line += f" [funded by {a['playerName']}]" if a.get("playerName") else " [not funded]"
         line += ": " + ", ".join(
