@@ -42,9 +42,25 @@ class Client:
         req.add_header("User-Agent", USER_AGENT)
         if data is not None:
             req.add_header("Content-Type", "application/json")
+        # A dropped connection (seen behind proxies) is retried once for reads. A submit is not retried: the
+        # server may already have applied it.
+        for attempt in (1, 2):
+            try:
+                raw = self._open(req)
+                break
+            except (ConnectionError, TimeoutError) as e:
+                if body is not None:
+                    raise TfmError(f"connection to {self.server} dropped ({e.__class__.__name__}) while submitting; "
+                                   "the move may have been applied: run `tfm turn` to check before retrying") from None
+                if attempt == 2:
+                    raise TfmError(f"connection to {self.server} dropped twice ({e.__class__.__name__}); "
+                                   "run the command again") from None
+        return json.loads(raw) if raw else None
+
+    def _open(self, req):
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                raw = resp.read().decode()
+                return resp.read().decode()
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
             try:
@@ -53,8 +69,9 @@ class Client:
                 msg = raw
             raise TfmError(f"server rejected request ({e.code}): {msg}") from None
         except urllib.error.URLError as e:
+            if isinstance(e.reason, (ConnectionError, TimeoutError)):
+                raise e.reason from None
             raise TfmError(f"cannot reach {self.server}: {e.reason}") from None
-        return json.loads(raw) if raw else None
 
     def player(self):
         return self._request("api/player")

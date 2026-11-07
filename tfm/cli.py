@@ -365,6 +365,9 @@ def cmd_play(args):
         print("  " + message(entry, ctx.names))
     me = new_view["thisPlayer"]
     print(f"NOW: {digest.resources(me)} · TR {me['terraformRating']} · hand {len(new_view.get('cardsInHand', []))}")
+    moved = _globals_moved(view["game"], new_view["game"])
+    if moved:
+        print(f"GLOBALS NOW: {moved}")
     ctx = options.Context(new_view, ctx.seen, False)
     wf = new_view.get("waitingFor")
     if new_view["game"]["phase"] == "end":
@@ -376,6 +379,16 @@ def cmd_play(args):
         print("Your turn is done. Run `tfm turn` to wait for your next decision.")
     _finish(seat, ctx)
     voice.print_unread(seat["name"], leading_blank=True, trailing_blank=False)
+
+
+def _globals_moved(before, after):
+    """The global parameters a play changed, as "temperature -10°C (was -14°C), ..." ("" when none moved)."""
+    parts = []
+    for key, label, unit in (("temperature", "temperature", "°C"), ("oxygenLevel", "oxygen", "%"),
+                             ("oceans", "oceans", ""), ("venusScaleLevel", "Venus", "%")):
+        if before.get(key) != after.get(key) and after.get(key) is not None:
+            parts.append(f"{label} {after[key]}{unit} (was {before.get(key)}{unit})")
+    return ", ".join(parts)
 
 
 def _settled_view(client, view, ctx):

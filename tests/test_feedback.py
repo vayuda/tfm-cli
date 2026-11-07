@@ -74,6 +74,41 @@ class GameLength(unittest.TestCase):
         self.assertEqual(ctx.gens_left, ctx.by_length)
 
 
+class PlayOutput(unittest.TestCase):
+    def test_globals_a_play_moved_are_reported(self):
+        before = {"temperature": -14, "oxygenLevel": 5, "oceans": 3, "venusScaleLevel": 10}
+        self.assertEqual(cli._globals_moved(before, dict(before)), "")
+        after = dict(before, temperature=-12)
+        self.assertEqual(cli._globals_moved(before, after), "temperature -12°C (was -14°C)")
+
+
+class DroppedConnection(unittest.TestCase):
+    def client(self, failures):
+        from tfm.client import Client
+        c = Client("http://example.invalid", "p1")
+        calls = []
+
+        def fake_open(req):
+            calls.append(req.get_method())
+            if len(calls) <= failures:
+                raise ConnectionResetError("reset by peer")
+            return "{}"
+        c._open = fake_open
+        return c, calls
+
+    def test_a_read_is_retried_once(self):
+        c, calls = self.client(failures=1)
+        self.assertEqual(c.player(), {})
+        self.assertEqual(calls, ["GET", "GET"])
+
+    def test_a_submit_is_not_retried(self):
+        from tfm.client import TfmError
+        c, calls = self.client(failures=1)
+        with self.assertRaisesRegex(TfmError, "may have been applied"):
+            c.submit({"type": "option"})
+        self.assertEqual(calls, ["POST"])
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}
