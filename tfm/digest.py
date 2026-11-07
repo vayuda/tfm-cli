@@ -129,12 +129,15 @@ def colonies(g, view, names, ctx=None):
     lines = [f"COLONIES (your fleets {me['fleetSize']}, trades used {me['tradesThisGeneration']}; you own {me['coloniesCount']}):"]
     for c in active:
         info = data.colony(c["name"]) or {}
-        qty = info.get("tradeQty")
-        pos = c.get("trackPosition", 0)
-        now = qty[pos] if isinstance(qty, list) and pos < len(qty) else "?"
+        now = data.trade_now(c["name"], c.get("trackPosition", 0)) or "?"
         owners = ", ".join(names.get(x, x) for x in c["colonies"]) or "-"
-        trade = info.get("trade", "?") if ctx is None or ctx.show_text("col:" + c["name"]) else "…"
-        line = f"  {c['name']}: trade {trade} (n={now} now) · colonies {owners} ({len(c['colonies'])}/3)"
+        line = f"  {c['name']}: trade now {now}"
+        if info and (ctx is None or ctx.show_text("col:" + c["name"])):
+            track = info.get("tradeResource") or (
+                [("temperature", "oxygen", "ocean")[q] for q in info["tradeQty"]] if info.get("trade", "").startswith("WGT") else None)
+            tile = "track " + ", ".join(data._RESOURCE_WORD.get(r, r) for r in track) if track else info.get("trade")
+            line += f" ({tile}; colony bonus per trade: {info.get('colonyBonus')})"
+        line += f" · colonies {owners} ({len(c['colonies'])}/3)"
         if c.get("visitor"):
             line += f" · fleet: {names.get(c['visitor'], c['visitor'])}"
         lines.append(line)

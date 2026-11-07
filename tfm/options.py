@@ -349,11 +349,7 @@ def _hazard_steps(space):
 
 def describe_colony(col, ctx, build=False):
     info = data.colony(col["name"]) or {}
-    qty = info.get("tradeQty")
-    trade = info.get("trade", "")
-    pos = col.get("trackPosition")
-    if isinstance(qty, list) and pos is not None and pos < len(qty):
-        trade = re.sub(r"\bn\b", str(qty[pos]), trade)
+    trade = data.trade_now(col["name"], col.get("trackPosition")) or info.get("trade", "")
     owners = ", ".join(ctx.names.get(c, c) for c in col.get("colonies", [])) or "none"
     s = f"{col['name']} (" + (f"build: {info['build']}; " if build and info.get("build") else "") + \
         f"trade: {trade}; colonies: {owners}; colony bonus: {info.get('colonyBonus', '?')}"

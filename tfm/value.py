@@ -984,6 +984,11 @@ def colony_reward_value(text, n, ctx):
     """M€ value of one colony reward text (build, trade or colony bonus) with n units."""
     t = (text or "").lower()
     left = ctx.left
+    if t.startswith("world government"):
+        return 1.0  # raises a parameter with no TR for the trader
+    if t.startswith("steal"):
+        res = next((r for r in ("steel", "titanium", "plants", "energy", "heat") if r in t), "megacredits")
+        return n * _unit(res, ctx)
     if "production" in t:
         res = next((r for r in ("steel", "titanium", "plant", "energy", "heat") if r in t), "megacredits")
         res = "plants" if res == "plant" else res
@@ -1024,12 +1029,17 @@ def _trade_qty(col, bump=0):
     return qty[min(max(0, col.get("trackPosition", 1) + bump), len(qty) - 1)]
 
 
+def _trade_text(col, bump=0):
+    """The trade reward at the track position (moved `bump` steps up), naming the resource where it changes."""
+    return data.trade_now(col["name"], col.get("trackPosition", 1) + bump)
+
+
 def tile_trade_rates(ctx):
     """{tile: expected trades there per generation by all players}: TRADES_PER_PLAYER per player, split over the
     tiles in proportion to what a trade pays at the track position now (at least a quarter of the trade cost, so
     every tile sees some trades)."""
     models = _colony_models(ctx)
-    weights = {c["name"]: max(TRADE_COST / 4, colony_reward_value(data.colony(c["name"]).get("trade"), _trade_qty(c), ctx))
+    weights = {c["name"]: max(TRADE_COST / 4, colony_reward_value(_trade_text(c), _trade_qty(c), ctx))
                for c in models}
     total = sum(weights.values())
     return {n: TRADES_PER_PLAYER * len(ctx.players) * w / total for n, w in weights.items()} if total else {}
@@ -1076,7 +1086,7 @@ def trade_value(col, ctx, bump=0):
     info = data.colony(col["name"])
     mine = (col.get("colonies") or []).count(ctx.me["color"])
     bonus = colony_reward_value(info.get("colonyBonus"), _first_number(info.get("colonyBonus")), ctx)
-    return colony_reward_value(info.get("trade"), _trade_qty(col, bump), ctx) + mine * bonus
+    return colony_reward_value(_trade_text(col, bump), _trade_qty(col, bump), ctx) + mine * bonus
 
 
 def fleet_value(ctx, extra=1):

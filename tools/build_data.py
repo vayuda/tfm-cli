@@ -149,6 +149,8 @@ def main():
             "tradeQty": c["trade"].get("quantity"),
             "colonyBonus": c["colony"]["description"],
         }
+        if isinstance(c["trade"].get("resource"), list):  # the reward type changes along the track
+            colonies[c["name"]]["tradeResource"] = c["trade"]["resource"]
     (OUT / "colonies.json").write_text(json.dumps(colonies, separators=(",", ":"), ensure_ascii=False))
     (OUT / "board.json").write_text(json.dumps(export, separators=(",", ":")))
     if len(sys.argv) > 3:

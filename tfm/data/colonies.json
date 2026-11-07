@@ -39,7 +39,16 @@
             1,
             1
         ],
-        "colonyBonus": "Gain 1 M€"
+        "colonyBonus": "Gain 1 M€",
+        "tradeResource": [
+            "megacredits",
+            "megacredits",
+            "energy",
+            "energy",
+            "plants",
+            "plants",
+            "plants"
+        ]
     },
     "Ganymede": {
         "build": "Gain 1 plant production",
@@ -179,7 +188,16 @@
             1,
             1
         ],
-        "colonyBonus": "Gain 2 M€"
+        "colonyBonus": "Gain 2 M€",
+        "tradeResource": [
+            "heat",
+            "heat",
+            "heat",
+            "steel",
+            "steel",
+            "titanium",
+            "titanium"
+        ]
     },
     "Hygiea": {
         "build": "Choose opponent to discard 1 card",
@@ -193,7 +211,16 @@
             3,
             3
         ],
-        "colonyBonus": "Gain 3 M€"
+        "colonyBonus": "Gain 3 M€",
+        "tradeResource": [
+            "megacredits",
+            "megacredits",
+            "heat",
+            "energy",
+            "plants",
+            "steel",
+            "titanium"
+        ]
     },
     "Titania": {
         "build": "Gain 5, 3, or 2 VP",

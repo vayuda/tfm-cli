@@ -67,6 +67,31 @@ def colony(name):
     return _load("colonies.json").get(name)
 
 
+_RESOURCE_WORD = {"megacredits": "M€"}
+_WGT_STEPS = ("raises temperature 1 step", "raises oxygen 1 step", "places an ocean")  # indexed by Terra's quantity
+
+
+def trade_now(name, position):
+    """What trading with a colony gives at this track position, in concrete terms ("Gain 2 VP",
+    "Gain 1 plants production"), or None for an unknown colony."""
+    info = colony(name)
+    if info is None:
+        return None
+    qty = info.get("tradeQty") or [1]
+    n = qty[min(max(0, position or 0), len(qty) - 1)]
+    resources = info.get("tradeResource")
+    res = resources[min(max(0, position or 0), len(resources) - 1)] if resources else None
+    word = _RESOURCE_WORD.get(res, res)
+    trade = info.get("trade", "")
+    if "production of the type" in trade:
+        return f"Gain {n} {word} production"
+    if trade.startswith("Steal"):
+        return f"Steal {n} {word} from another player (nothing if no rival has any)"
+    if trade.startswith("WGT"):
+        return f"World Government {_WGT_STEPS[n]} (no TR for you; nothing if maxed)"
+    return re.sub(r"\b[nN]\b", str(n), trade)
+
+
 def board():
     return _load("board.json")
 
