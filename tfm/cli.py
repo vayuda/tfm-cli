@@ -310,9 +310,12 @@ def cmd_options(args):
     _finish(seat, ctx)
 
 
-def _leaf_matches(leaf, text):
+def _leaf_matches(leaf, text, values=()):
+    """Whether --expect TEXT names this choice: its label, its card, or (for a choice that takes values, like the
+    opening pick) one of the values given."""
     text = text.lower()
-    return text in leaf.label.lower() or (isinstance(leaf.fixed, str) and text in leaf.fixed.lower())
+    return text in leaf.label.lower() or (isinstance(leaf.fixed, str) and text in leaf.fixed.lower()) or \
+        (leaf.fixed is None and any(text in v.lower() for v in values))
 
 
 def cmd_play(args):
@@ -332,7 +335,7 @@ def cmd_play(args):
         sys.exit(2)
     all_leaves = options.leaves(wf, ctx)
     leaf = options.find_leaf(all_leaves, args.choice)
-    if args.expect and not _leaf_matches(leaf, args.expect):
+    if args.expect and not _leaf_matches(leaf, args.expect, args.values):
         print(f"Option [{leaf.id}] is now \"{leaf.label}\", which doesn't contain \"{args.expect}\", "
               "so nothing was submitted.")
         matches = [lf.id for lf in all_leaves if _leaf_matches(lf, args.expect)]

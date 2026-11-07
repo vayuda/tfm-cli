@@ -70,7 +70,8 @@ your own notes, or use `tfm card "<name>"` or `--full` to see it again.
 Payment keys: `mc`, `steel`, `titanium`, `heat`, `plants`, `microbes`, `floaters`, `seeds`, `data`, `graphene`.
 
 **Always add `--expect` with the name of what you're choosing**: the card, project, milestone, award,
-colony or space id. For example: `tfm -s me play 2.3 --expect "Solar Farm"` or
+colony or space id (text from the option's label, or for a choice that takes values, like the opening pick,
+from one of your values). For example: `tfm -s me play 2.3 --expect "Solar Farm"` or
 `play 1.12 --expect "space 35"`. Choice ids renumber after every action, so an id from an old list
 can point at a different option. With `--expect`, a mismatch is refused, the options matching your
 text are listed, and nothing is submitted. Also, never chain two `play` commands in one shell call:

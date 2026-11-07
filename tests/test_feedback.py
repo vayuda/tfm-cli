@@ -162,6 +162,16 @@ class SpaceOwner(unittest.TestCase):
         self.assertIn("has p1 city", options.describe_space("21", ctx))
 
 
+class Expect(unittest.TestCase):
+    def test_expect_matches_the_values_of_a_value_taking_choice(self):
+        from tfm.options import Leaf
+        opening = Leaf("1", "Select initial cards", [], {}, fixed=None)
+        self.assertTrue(cli._leaf_matches(opening, "ecoline", ["Ecoline", "Allied Bank,Biolab", "Mine"]))
+        self.assertFalse(cli._leaf_matches(opening, "Helion", ["Ecoline"]))
+        card = Leaf("2.3", "Play project card › Mine", [], {}, fixed="Mine")
+        self.assertFalse(cli._leaf_matches(card, "Birds", ["Birds"]))  # a fixed choice is named by its label only
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}
