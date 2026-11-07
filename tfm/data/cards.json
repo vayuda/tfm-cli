@@ -97,7 +97,7 @@
         "tags": [
             "plant"
         ],
-        "text": "Effect: When anyone places an ocean tile, gain 2 plants. It must be -12 C or colder to play. Gain 1 plant.",
+        "text": "Effect: When anyone places an ocean tile, gain 2 plants. When played: It must be -12 C or colder to play. Gain 1 plant.",
         "module": "base",
         "req": [
             "max temperature -12"
@@ -189,7 +189,7 @@
         "tags": [
             "animal"
         ],
-        "text": "Action: Add an animal to this card. (Requires 13% oxygen. Decrease any plant production 2 steps.) (1 VP for each animal on this card.)",
+        "text": "Action: Add an animal to this card. When played: (Requires 13% oxygen. Decrease any plant production 2 steps.) (1 VP for each animal on this card.)",
         "module": "base",
         "req": [
             "oxygen 13"
@@ -669,7 +669,7 @@
             "city",
             "building"
         ],
-        "text": "Effect: When a city tile is placed, including this, increase your M€ production 1 step. Decrease your energy production 1 step and decrease your M€ production 2 steps. Place a city tile.",
+        "text": "Effect: When a city tile is placed, including this, increase your M€ production 1 step. When played: Decrease your energy production 1 step and decrease your M€ production 2 steps. Place a city tile.",
         "module": "base"
     },
     "Immigration Shuttles": {
@@ -964,7 +964,7 @@
         "tags": [
             "microbe"
         ],
-        "text": "Action: Add 1 microbe to this card, or remove 3 microbes to increase your TR 1 step. Add 3 microbes to this card.",
+        "text": "Action: Add 1 microbe to this card, or remove 3 microbes to increase your TR 1 step. When played: Add 3 microbes to this card.",
         "module": "base",
         "resource": "Microbe"
     },
@@ -1092,7 +1092,7 @@
             "earth",
             "animal"
         ],
-        "text": "Effect: When any city tile is placed, add an animal to this card. Animals may not be removed from this card 1 VP per 2 animals here. Add 1 animal to this card.",
+        "text": "Effect: When any city tile is placed, add an animal to this card. Animals may not be removed from this card 1 VP per 2 animals here. When played: Add 1 animal to this card.",
         "module": "base",
         "vp": "1 per 2 resources here",
         "resource": "Animal"
@@ -1198,7 +1198,7 @@
             "city",
             "building"
         ],
-        "text": "Effect: When you play a card, you pay 1 M€ less for it. Place a city tile NEXT TO NO OTHER TILE.",
+        "text": "Effect: When you play a card, you pay 1 M€ less for it. When played: Place a city tile NEXT TO NO OTHER TILE.",
         "module": "base"
     },
     "Rover Construction": {
@@ -1762,7 +1762,7 @@
         "tags": [
             "earth"
         ],
-        "text": "Action: Look at the top card and either buy it or discard it Decrease your M€ production 1 step.",
+        "text": "Action: Look at the top card and either buy it or discard it When played: Decrease your M€ production 1 step.",
         "module": "corpera"
     },
     "Callisto Penal Mines": {
@@ -1858,7 +1858,7 @@
         "tags": [
             "building"
         ],
-        "text": "Action: Spend 1 plant or 1 steel to gain 7 M€. Oxygen must be 8% or less. Decrease your energy production 1 step.",
+        "text": "Action: Spend 1 plant or 1 steel to gain 7 M€. When played: Oxygen must be 8% or less. Decrease your energy production 1 step.",
         "module": "corpera",
         "req": [
             "max oxygen 8"
@@ -1936,7 +1936,7 @@
         "tags": [
             "building"
         ],
-        "text": "Action: Spend 7 M€ to increase your steel production 1 step. Place this tile adjacent to a city tile.",
+        "text": "Action: Spend 7 M€ to increase your steel production 1 step. When played: Place this tile adjacent to a city tile.",
         "module": "corpera"
     },
     "Interstellar Colony Ship": {
@@ -2206,7 +2206,7 @@
         "tags": [
             "science"
         ],
-        "text": "Action: Spend 2 M€ to draw a card. Place this tile.",
+        "text": "Action: Spend 2 M€ to draw a card. When played: Place this tile.",
         "module": "corpera"
     },
     "Robotic Workforce": {
@@ -2252,7 +2252,7 @@
             "space",
             "building"
         ],
-        "text": "Action: Spend 1 steel to gain 5 M€. Increase your titanium production 1 step.",
+        "text": "Action: Spend 1 steel to gain 5 M€. When played: Increase your titanium production 1 step.",
         "module": "corpera",
         "vp": "2"
     },
@@ -2501,7 +2501,7 @@
             "earth",
             "space"
         ],
-        "text": "Action: Gain 1 M€ per science tag you have. Decrease your M€ production 2 steps.",
+        "text": "Action: Gain 1 M€ per science tag you have. When played: Decrease your M€ production 2 steps.",
         "module": "promo",
         "vp": "2"
     },
@@ -2571,7 +2571,7 @@
             "earth",
             "space"
         ],
-        "text": "Action: Spend 1 M€ to add 1 asteroid to ANY card OR spend 1 asteroid here to increase M€ production 1 step OR gain 2 titanium. Add 2 asteroids to this card.",
+        "text": "Action: Spend 1 M€ to add 1 asteroid to ANY card OR spend 1 asteroid here to increase M€ production 1 step OR gain 2 titanium. When played: Add 2 asteroids to this card.",
         "module": "promo",
         "resource": "Asteroid"
     },
@@ -2654,7 +2654,7 @@
         "tags": [
             "building"
         ],
-        "text": "Action: Add a microbe or animal to ANOTHER card. Gain 3 plants. Raise temperature 1 step, and place 1 ocean tile.",
+        "text": "Action: Add a microbe or animal to ANOTHER card. When played: Gain 3 plants. Raise temperature 1 step, and place 1 ocean tile.",
         "module": "promo"
     },
     "Diversity Support": {
@@ -2685,7 +2685,7 @@
             "microbe",
             "earth"
         ],
-        "text": "Effect: When you gain a microbe to ANY CARD, also gain 1 M€. Gain 3 plants.",
+        "text": "Effect: When you gain a microbe to ANY CARD, also gain 1 M€. When played: Gain 3 plants.",
         "module": "promo"
     },
     "Imported Nutrients": {
@@ -2792,7 +2792,7 @@
             "jovian",
             "earth"
         ],
-        "text": "max 5 Action: Spend 1 floater from here to gain 1 M€ from each floater here, INCLUDING THE PAID FLOATER. Max 5. Add 1 floater here for every Earth tag you have, including this.",
+        "text": "max 5 Action: Spend 1 floater from here to gain 1 M€ from each floater here, INCLUDING THE PAID FLOATER. Max 5. When played: Add 1 floater here for every Earth tag you have, including this.",
         "module": "promo",
         "vp": "1",
         "resource": "Floater"
@@ -2945,7 +2945,7 @@
         "tags": [
             "building"
         ],
-        "text": "Effect: When you raise the temperature, gain 3 M€. Increase your heat production 2 steps.",
+        "text": "Effect: When you raise the temperature, gain 3 M€. When played: Increase your heat production 2 steps.",
         "module": "promo"
     },
     "Kaguya Tech": {
@@ -2962,7 +2962,7 @@
         "type": "active",
         "cost": 13,
         "tags": [],
-        "text": "Action: MOVE THE NOMADS to an adjacent, non-reserved empty area and collect THE PLACEMENT BONUS as if placing a special tile there. No tiles may be placed on the Nomad area. PLACE THE NOMADS on a non-reserved, empty area on the game board.",
+        "text": "Action: MOVE THE NOMADS to an adjacent, non-reserved empty area and collect THE PLACEMENT BONUS as if placing a special tile there. No tiles may be placed on the Nomad area. When played: PLACE THE NOMADS on a non-reserved, empty area on the game board.",
         "module": "promo"
     },
     "Neptunian Power Consultants": {
@@ -2983,7 +2983,7 @@
             "building",
             "plant"
         ],
-        "text": "Effect: When playing a building tag, plants may be used as 3 M€ each. (Requires that you have 2 greenery tiles. Increase plant production 1 step.)",
+        "text": "Effect: When playing a building tag, plants may be used as 3 M€ each. When played: (Requires that you have 2 greenery tiles. Increase plant production 1 step.)",
         "module": "promo",
         "req": [
             "greeneries 2"
@@ -3006,7 +3006,7 @@
             "earth",
             "space"
         ],
-        "text": "Effect: When you play an Earth tag, you pay 2 M€ less. Effect: When any player plays a space event, draw a card. Gain 2 titanium.",
+        "text": "Effect: When you play an Earth tag, you pay 2 M€ less. Effect: When any player plays a space event, draw a card. When played: Gain 2 titanium.",
         "module": "promo",
         "vp": "1"
     },
@@ -3017,7 +3017,7 @@
             "power",
             "building"
         ],
-        "text": "Action: Spend 1 energy production to gain 1 plant production. Raise your TR 1 step.",
+        "text": "Action: Spend 1 energy production to gain 1 plant production. When played: Raise your TR 1 step.",
         "module": "promo"
     },
     "Directed Heat Usage": {
@@ -3077,7 +3077,7 @@
         "tags": [
             "building"
         ],
-        "text": "Effect: Each time a city is placed, gain a disease here. Action: Remove a disease from ANY OF YOUR CARDS to gain 1 M€ per city in play. Decrease your energy production 1 step.",
+        "text": "Effect: Each time a city is placed, gain a disease here. Action: Remove a disease from ANY OF YOUR CARDS to gain 1 M€ per city in play. When played: Decrease your energy production 1 step.",
         "module": "promo",
         "vp": "1",
         "resource": "Disease"
@@ -3525,7 +3525,7 @@
         "tags": [
             "venus"
         ],
-        "text": "Action: Add 1 floater to this card, or remove 2 floaters here to raise Venus 1 step. Add 3 floaters to this card.",
+        "text": "Action: Add 1 floater to this card, or remove 2 floaters here to raise Venus 1 step. When played: Add 3 floaters to this card.",
         "module": "venus",
         "resource": "Floater"
     },
@@ -4085,7 +4085,7 @@
         "type": "active",
         "cost": 15,
         "tags": [],
-        "text": "Action: Add one floater here, or spend 1 floater here to gain 2 titanium, or 3 energy, or 4 heat. Add 2 floaters to ANY card.",
+        "text": "Action: Add one floater here, or spend 1 floater here to gain 2 titanium, or 3 energy, or 4 heat. When played: Add 2 floaters to ANY card.",
         "module": "colonies",
         "resource": "Floater"
     },
@@ -4501,7 +4501,7 @@
         "tags": [
             "building"
         ],
-        "text": "Effect: WHEN PLAYING A CARD WITH A BASIC COST OF 20M€ OR MORE, draw a card. Increase your M€ production 2 steps.",
+        "text": "Effect: WHEN PLAYING A CARD WITH A BASIC COST OF 20M€ OR MORE, draw a card. When played: Increase your M€ production 2 steps.",
         "module": "colonies"
     },
     "Sub-zero Salt Fish": {
@@ -4535,7 +4535,7 @@
         "tags": [
             "jovian"
         ],
-        "text": "Action: Add 1 floater to ANY JOVIAN CARD or spend 1 floater here to trade for free. Add two floaters to ANY JOVIAN CARD.",
+        "text": "Action: Add 1 floater to ANY JOVIAN CARD or spend 1 floater here to trade for free. When played: Add two floaters to ANY JOVIAN CARD.",
         "module": "colonies",
         "vp": "1",
         "resource": "Floater"
@@ -4558,7 +4558,7 @@
         "tags": [
             "space"
         ],
-        "text": "+1 Effect: When you trade, you may first increase that Colony Tile track 1 step. Place a colony.",
+        "text": "+1 Effect: When you trade, you may first increase that Colony Tile track 1 step. When played: Place a colony.",
         "module": "colonies"
     },
     "Trade Envoys": {
@@ -5140,7 +5140,7 @@
             "science",
             "space"
         ],
-        "text": "-X 2x Action: Discard any number of cards from your hand to gain 2 M€ for each discarded card. (Gain 2 M€ per colony you own.)",
+        "text": "-X 2x Action: Discard any number of cards from your hand to gain 2 M€ for each discarded card. When played: (Gain 2 M€ per colony you own.)",
         "module": "prelude2",
         "vp": "1"
     },
@@ -5160,7 +5160,7 @@
         "tags": [
             "space"
         ],
-        "text": "+2 Effect: When you trade, you may first increase that colony tile track 2 steps. 3 (Add a resource to 3 different cards that already have resources.)",
+        "text": "+2 Effect: When you trade, you may first increase that colony tile track 2 steps. When played: 3 (Add a resource to 3 different cards that already have resources.)",
         "module": "prelude2",
         "vp": "2"
     },
@@ -5204,7 +5204,7 @@
         "type": "active",
         "cost": 10,
         "tags": [],
-        "text": "Effect: You have +1 influence. Gain 3 M€ per colony you have.",
+        "text": "Effect: You have +1 influence. When played: Gain 3 M€ per colony you have.",
         "module": "prelude2"
     },
     "Envoys From Venus": {
@@ -5247,7 +5247,7 @@
         "tags": [
             "venus"
         ],
-        "text": "Action: Add 1 floater here, or remove 2 floaters from ANY CARD to gain 1 titanium and 2 M€. Add 1 floater here for each Venus tag you have.",
+        "text": "Action: Add 1 floater here, or remove 2 floaters from ANY CARD to gain 1 titanium and 2 M€. When played: Add 1 floater here for each Venus tag you have.",
         "module": "prelude2",
         "resource": "Floater"
     },
@@ -5345,7 +5345,7 @@
         "tags": [
             "venus"
         ],
-        "text": "( ) Action: Spend 12 M€ to raise Venus 1 step. This cost is REDUCED BY 1 FOR EACH VENUS TAG you have. Add 2 floaters to ANY VENUS CARD.",
+        "text": "( ) Action: Spend 12 M€ to raise Venus 1 step. This cost is REDUCED BY 1 FOR EACH VENUS TAG you have. When played: Add 2 floaters to ANY VENUS CARD.",
         "module": "prelude2"
     },
     "Venus Trade Hub": {
@@ -6221,7 +6221,7 @@
         "tags": [
             "building"
         ],
-        "text": "Action: Spend 7 M€ to increase your steel production 1 step. Place this tile adjacent to a city tile. This tile grants an ADJACENCY BONUS of 1 steel.",
+        "text": "Action: Spend 7 M€ to increase your steel production 1 step. When played: Place this tile adjacent to a city tile. This tile grants an ADJACENCY BONUS of 1 steel.",
         "module": "ares"
     },
     "Great Dam:ares": {
@@ -6260,7 +6260,7 @@
         "tags": [
             "earth"
         ],
-        "text": "Effect: When an ADJACENCY BONUS is collected from a tile you own, you gain 1 M€. Increase your M€ production 1 step.",
+        "text": "Effect: When an ADJACENCY BONUS is collected from a tile you own, you gain 1 M€. When played: Increase your M€ production 1 step.",
         "module": "ares"
     },
     "Metallic Asteroid": {
@@ -6369,7 +6369,7 @@
         "tags": [
             "science"
         ],
-        "text": "Action: Spend 2 M€ to draw a card. Place this tile which grants an ADJACENCY BONUS of 1 card.",
+        "text": "Action: Spend 2 M€ to draw a card. When played: Place this tile which grants an ADJACENCY BONUS of 1 card.",
         "module": "ares"
     },
     "Solar Farm": {
@@ -6508,7 +6508,7 @@
             "moon",
             "space"
         ],
-        "text": "Action: Gain 2 M€ for each habitat tile on The Moon. Spend 2 titanium. Place this tile ON THE RESERVED AREA.",
+        "text": "Action: Gain 2 M€ for each habitat tile on The Moon. When played: Spend 2 titanium. Place this tile ON THE RESERVED AREA.",
         "module": "moon"
     },
     "Luna Mining Hub": {
@@ -6552,7 +6552,7 @@
         "tags": [
             "building"
         ],
-        "text": "0 Effect: When you place a road tile on The Moon, you spend no steel on it. Spend 1 titanium. Raise the logistic rate 1 step.",
+        "text": "0 Effect: When you place a road tile on The Moon, you spend no steel on it. When played: Spend 1 titanium. Raise the logistic rate 1 step.",
         "module": "moon"
     },
     "Deep Lunar Mining": {
@@ -6571,7 +6571,7 @@
             "moon",
             "space"
         ],
-        "text": "Steal Action: Steal 2 M€ from each player and add a resource cube here. Spend 3 titanium. -1 VP for every resource here.",
+        "text": "Steal Action: Steal 2 M€ from each player and add a resource cube here. When played: Spend 3 titanium. -1 VP for every resource here.",
         "module": "moon",
         "vp": "1 per resource here",
         "resource": "Resource cube"
@@ -6758,7 +6758,7 @@
         "tags": [
             "moon"
         ],
-        "text": "Effect: When you build a habitat on THE MOON, you spend 1 titanium less. Spend 2 steel. Raise the habitat rate 1 step.",
+        "text": "Effect: When you build a habitat on THE MOON, you spend 1 titanium less. When played: Spend 2 steel. Raise the habitat rate 1 step.",
         "module": "moon"
     },
     "Improved Moon Concrete": {
@@ -6767,7 +6767,7 @@
         "tags": [
             "moon"
         ],
-        "text": "Effect: When you build a mine on The Moon, you spend 1 titanium less. Spend 2 steel. Raise the mining rate 1 step.",
+        "text": "Effect: When you build a mine on The Moon, you spend 1 titanium less. When played: Spend 2 steel. Raise the mining rate 1 step.",
         "module": "moon"
     },
     "Mooncrate Block Factory": {
@@ -7214,7 +7214,7 @@
         "tags": [
             "space"
         ],
-        "text": "Action: Perform a trade action. raise the logistic rate 1 step.",
+        "text": "Action: Perform a trade action. When played: raise the logistic rate 1 step.",
         "module": "moon"
     },
     "Undermoon Drug Lords Network": {
@@ -7701,7 +7701,7 @@
             "mars",
             "space"
         ],
-        "text": "Effect: When you play a Venus or Mars tag, pay 2 M€ less. Raise your TR 2 steps.",
+        "text": "Effect: When you play a Venus or Mars tag, pay 2 M€ less. When played: Raise your TR 2 steps.",
         "module": "pathfinders"
     },
     "Ceres Spaceport": {
@@ -7726,7 +7726,7 @@
             "power",
             "space"
         ],
-        "text": "Action: Pay 2 titanium to raise your heat and energy production 1 step each. Raise the temperature 1 step. Draw a card. Place a city tile ON THE RESERVED AREA. Raise your energy and heat production 2 steps.",
+        "text": "Action: Pay 2 titanium to raise your heat and energy production 1 step each. When played: Raise the temperature 1 step. Draw a card. Place a city tile ON THE RESERVED AREA. Raise your energy and heat production 2 steps.",
         "module": "pathfinders",
         "vp": "1"
     },
@@ -7935,7 +7935,7 @@
             "space",
             "jovian"
         ],
-        "text": "Effect: Whenever you play a card with a Jovian tag, including this, draw a card. Increase your M€ production 1 step.",
+        "text": "Effect: Whenever you play a card with a Jovian tag, including this, draw a card. When played: Increase your M€ production 1 step.",
         "module": "pathfinders"
     },
     "Declaration of Independence": {
@@ -9626,7 +9626,7 @@
             "jovian",
             "space"
         ],
-        "text": "Action: Spend 1 titanium to put 2 fighters on this card, or spend 6 fighter resource on this card to take first player next generation. 1 VP for each Jovian tag you have. Put 4 fighters on this card.",
+        "text": "Action: Spend 1 titanium to put 2 fighters on this card, or spend 6 fighter resource on this card to take first player next generation. 1 VP for each Jovian tag you have. When played: Put 4 fighters on this card.",
         "module": "underworld",
         "vp": "1 per jovian tag",
         "resource": "Fighter"
@@ -9638,7 +9638,7 @@
             "jovian",
             "space"
         ],
-        "text": "Effect: When blocking damage from other players, you can use fighters here as if they were corruption resources. You cannot use them for score bribing or collusion. Action: Spend 1 titanium to add 1 fighter resource to this card. Add 1 fighter resource to this card.",
+        "text": "Effect: When blocking damage from other players, you can use fighters here as if they were corruption resources. You cannot use them for score bribing or collusion. Action: Spend 1 titanium to add 1 fighter resource to this card. When played: Add 1 fighter resource to this card.",
         "module": "underworld",
         "resource": "Fighter"
     },
@@ -9649,7 +9649,7 @@
             "crime",
             "space"
         ],
-        "text": "Effect: Whenever you play a crime tag, including this, put 1 fighter on this card. STEAL Action: Steal up to 1 M€ per fighter here, from EACH OTHER player. For each player that blocks this, remove 1 fighter from here. : DO NOT USE FOR SOLO Requires 3 corruption.",
+        "text": "Effect: Whenever you play a crime tag, including this, put 1 fighter on this card. STEAL Action: Steal up to 1 M€ per fighter here, from EACH OTHER player. For each player that blocks this, remove 1 fighter from here. When played: : DO NOT USE FOR SOLO Requires 3 corruption.",
         "module": "underworld",
         "req": [
             "corruption 3"
@@ -9664,7 +9664,7 @@
             "crime",
             "space"
         ],
-        "text": "Action: Spend 1 energy to gain 2 M€ for each corruption resource you have. Gain 1 corruption. Put 1 fighter on ANY card.",
+        "text": "Action: Spend 1 energy to gain 2 M€ for each corruption resource you have. When played: Gain 1 corruption. Put 1 fighter on ANY card.",
         "module": "underworld"
     },
     "Hyperspace Drive Prototype": {
@@ -9725,7 +9725,7 @@
             "microbe",
             "plant"
         ],
-        "text": "Action: Spend 1 microbe from ANY card and discard 1 of your claimed underground resource tokens to gain 3 plants. Excavate an underground resource. Put 1 microbe on this card.",
+        "text": "Action: Spend 1 microbe from ANY card and discard 1 of your claimed underground resource tokens to gain 3 plants. When played: Excavate an underground resource. Put 1 microbe on this card.",
         "module": "underworld",
         "resource": "Microbe"
     },
@@ -9769,7 +9769,7 @@
             "crime",
             "building"
         ],
-        "text": "Action: Spend 1 plant to excavate an underground resource. Gain 2 corruption.",
+        "text": "Action: Spend 1 plant to excavate an underground resource. When played: Gain 2 corruption.",
         "module": "underworld"
     },
     "Corporate Theft": {
@@ -9778,7 +9778,7 @@
         "tags": [
             "crime"
         ],
-        "text": "STEAL Action: Pay 5 M€ to steal ANY 1 resource from another player. If it is a card resource, you may put it on a suitable card. DOES NOT WORK IN SOLO GAMES Requires 2 corruption.",
+        "text": "STEAL Action: Pay 5 M€ to steal ANY 1 resource from another player. If it is a card resource, you may put it on a suitable card. When played: DOES NOT WORK IN SOLO GAMES Requires 2 corruption.",
         "module": "underworld",
         "req": [
             "corruption 2"
@@ -9828,7 +9828,7 @@
         "tags": [
             "crime"
         ],
-        "text": "Action: Spend 1 corruption to increase any production 1 step. STEAL Requires 2 corruption. Choose a standard resource type. Steal up to 2 units of that resource from EACH OTHER player.",
+        "text": "Action: Spend 1 corruption to increase any production 1 step. When played: STEAL Requires 2 corruption. Choose a standard resource type. Steal up to 2 units of that resource from EACH OTHER player.",
         "module": "underworld",
         "req": [
             "corruption 2"
@@ -9898,7 +9898,7 @@
         "tags": [
             "building"
         ],
-        "text": "Action: Place your player cube on one of your claimed underground resource tokens without a cube on it. 1 VP per underground resource token with a cube on it. Excavate an underground resource.",
+        "text": "Action: Place your player cube on one of your claimed underground resource tokens without a cube on it. 1 VP per underground resource token with a cube on it. When played: Excavate an underground resource.",
         "module": "underworld",
         "vp": "special"
     },

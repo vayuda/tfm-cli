@@ -11,6 +11,7 @@ The third file (card effects and planetary tracks, used by `tfm value`) is optio
 tfm/data/behaviors.json is left as it is.
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -95,6 +96,23 @@ def vp_text(vp):
     return "special"
 
 
+def mark_play_effects(text):
+    """On an active card the renderer lists its action/effect first and then what playing it does; mark where the
+    play effects start, since players read "Action: ... Raise your TR 1 step." as part of the action (Teslaract)."""
+    starts = ("Action:", "Effect:")
+    last = max((i for i, t in enumerate(text) if t.startswith(starts)), default=None)
+    if last is None:
+        return
+    for i in range(last + 1, len(text)):
+        t = text[i]
+        # Not play effects: requirements ("Oxygen must be 8% or less."), rules and VP text.
+        if t.startswith(("Requires", "OR")) or "VP" in t or "may not" in t or \
+                re.fullmatch(r"[\w -]+ must (be )?[^.]*\.?", t):
+            continue
+        text[i] = "When played: " + t
+        return
+
+
 def build_cards(app):
     cards = json.loads((app / "src/genfiles/cards.json").read_text())
     out = {}
@@ -111,6 +129,8 @@ def build_cards(app):
             if p not in seen:
                 seen.add(p)
                 text.append(p)
+        if c["type"] == "active":
+            mark_play_effects(text)
         entry = {
             "type": c["type"],
             "cost": c.get("cost"),
