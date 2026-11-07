@@ -291,6 +291,11 @@ def describe_space(sid, ctx):
     if steps:
         # Ares: a tile placed on a hazard pays 8 M€ per severity step and removes it for that many TR.
         parts.append(f"ON {data.tile_name(space['tileType'])}: costs {8 * steps} M€ extra, +{steps} TR")
+    elif space.get("tileType") is not None:
+        # Choices of existing tiles (a cathedral in a city, a tile to remove) need to say whose tile it is.
+        owner = space.get("color")
+        who = "YOUR" if owner == ctx.me["color"] else ctx.names.get(owner, owner) if owner else "neutral"
+        parts.append(f"has {who} {data.tile_name(space['tileType'])}" + (" (cathedral)" if space.get("cathedral") else ""))
     adj = []
     empty = 0
     lose = 0

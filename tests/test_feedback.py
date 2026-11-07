@@ -152,6 +152,16 @@ class LogText(unittest.TestCase):
         self.assertEqual(message(paid, {}), "red played Mine [ paid 1 steel + 2 M€ ]")
 
 
+class SpaceOwner(unittest.TestCase):
+    def test_a_space_with_a_tile_names_its_owner(self):
+        from tfm import options
+        v = view()
+        v["game"]["gameOptions"]["boardName"] = "tharsis"
+        v["game"]["spaces"] = [{"id": "21", "spaceType": "land", "bonus": [], "tileType": 2, "color": "green"}]
+        ctx = options.Context(v, set(), False)
+        self.assertIn("has p1 city", options.describe_space("21", ctx))
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}
