@@ -5,6 +5,19 @@ from . import data
 
 # LogMessageDataType values from the app.
 _PLAYER, _CARD, _TILE, _BONUS, _CARDS = 2, 3, 9, 10, 14
+# Newer servers send resources as icons: "${0} gained ${1}${2}" with ${2} a stock resource, a production or a card
+# resource, and payments as icon markdown ("-1:r:steel: -11:r:mc:").
+_RESOURCE, _PRODUCTION, _CARD_RESOURCE, _MARKDOWN = 15, 16, 17, 18
+_WORD = {"megacredits": "M€", "mc": "M€"}
+
+
+def _markdown(text):
+    parts = [(int(n), _WORD.get(r, r)) for n, r in re.findall(r"(-?\d+):r:(\w+):", text)]
+    if not parts:
+        return text
+    if all(n < 0 for n, _ in parts):
+        return "paid " + " + ".join(f"{-n} {r}" for n, r in parts)
+    return ", ".join(f"{n:+d} {r}" for n, r in parts)
 
 
 def message(msg, names=None):
@@ -25,6 +38,14 @@ def message(msg, names=None):
             values.append(data.bonus_name(v))
         elif t == _CARDS:
             values.append(", ".join(v))
+        elif t == _RESOURCE:
+            values.append(" " + _WORD.get(v, v))
+        elif t == _PRODUCTION:
+            values.append(f" {_WORD.get(v, v)} production")
+        elif t == _CARD_RESOURCE:
+            values.append(" " + str(v).lower())
+        elif t == _MARKDOWN:
+            values.append(_markdown(str(v)))
         else:
             values.append(str(v))
 
@@ -32,7 +53,7 @@ def message(msg, names=None):
         i = int(m.group(1))
         return values[i] if i < len(values) else m.group(0)
 
-    return re.sub(r"\$\{(\d+)\}", sub, msg.get("message", ""))
+    return re.sub(r"  +", " ", re.sub(r"\$\{(\d+)\}", sub, msg.get("message", "")))
 
 
 def card_line(model_or_name, with_text=True, cost=None):

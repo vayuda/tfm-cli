@@ -139,6 +139,19 @@ class Playable(unittest.TestCase):
         self.assertIsNone(options.playable_cards({"type": "card", "cards": [{"name": "Mine"}]}))
 
 
+class LogText(unittest.TestCase):
+    def test_resource_icons_render_as_words(self):
+        from tfm.text import message
+        gained = {"message": "${0} gained ${1}${2}", "data": [{"type": 2, "value": "red"}, {"type": 1, "value": "4"}]}
+        self.assertEqual(message({**gained, "data": gained["data"] + [{"type": 16, "value": "megacredits"}]}, {}),
+                         "red gained 4 M€ production")
+        self.assertEqual(message({**gained, "data": gained["data"] + [{"type": 15, "value": "steel"}]}, {}),
+                         "red gained 4 steel")
+        paid = {"message": "${0} played ${1} [ ${2} ]", "data": [{"type": 2, "value": "red"}, {"type": 3, "value": "Mine"},
+                                                               {"type": 18, "value": "-1:r:steel: -2:r:mc:"}]}
+        self.assertEqual(message(paid, {}), "red played Mine [ paid 1 steel + 2 M€ ]")
+
+
 class Awards(unittest.TestCase):
     def test_award_text_printed_every_turn(self):
         a = {"name": "Kingpin", "scores": [{"color": "red", "score": 2}]}
